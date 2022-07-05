@@ -82,6 +82,7 @@ $ cdk deploy AlarmCallCommonStack
 
 ## 5.個別スタック
 
+個別スタックは、指定したアラームをEventBridgeでStepFunctionsに繋ぎます。
 個別スタックは、アラーム毎にデプロイします。
 
 * name: 個別名（スタックを区別するために命名します「個人名等」）
@@ -104,4 +105,7 @@ AlarmCallStack-{name}のnameは、-c name=で指定したものと一致して�
 ```
 % cdk deploy AlarmCallStack-YamadaTaro -c name=YamadaTaro -c phoneNumber=+8190xxxxxxxx -c waitSecinds=120 -c maxRetries=3 -c alarmArn=arn:aws:cloudwatch:ap-northeast-1:439028474478:alarm:sampleAlarm
 ```
+
+![](images/011.png)
+![](images/012.png)
 
