@@ -22,9 +22,9 @@ export class AlarmCallCommonStack extends Stack {
     const queueId =  this.node.tryGetContext('queueId');
     
     const tag = 'AlarmCall';
+    const tableName = `${tag}_Table`;
 
     // DynamoDB (Amazon Connectのフローの中で使用され、キー入力があった場合にidを保存するTable)
-    const tableName = `${tag}_Table`;
     const table = new Table(this, 'Table', {
       tableName: tableName,
       partitionKey: {
@@ -52,7 +52,6 @@ export class AlarmCallCommonStack extends Stack {
         'dynamodb:PutItem',
       ]
     }));
-
     new aws_lambda.Function(this, 'saveIdFunction', {
       code: aws_lambda.Code.fromAsset(`lambda/SaveId`),
       handler: 'lambda_function.lambda_handler',
@@ -70,8 +69,7 @@ export class AlarmCallCommonStack extends Stack {
         )  
       ],
     });
-
-    new aws_lambda.Function(this, 'IteratorFunction', {
+    const iteratorFunction = new aws_lambda.Function(this, 'IteratorFunction', {
       code: aws_lambda.Code.fromAsset(`lambda/Iterator`),
       handler: 'lambda_function.lambda_handler',
       functionName: `${tag}_Iterator`,
@@ -80,6 +78,46 @@ export class AlarmCallCommonStack extends Stack {
     });
 
     // Step Functions
+    const stepfunctionsRole = new aws_iam.Role(this, 'StepfunctionsRole', {
+      assumedBy: new aws_iam.ServicePrincipal('states.amazonaws.com'),
+      managedPolicies:[
+        aws_iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'service-role/AWSLambdaBasicExecutionRole',
+        )  
+      ],
+    });
+    stepfunctionsRole.addToPolicy(new aws_iam.PolicyStatement({
+      effect: aws_iam.Effect.ALLOW,
+      resources: ["*"],
+      actions: [
+        "xray:PutTraceSegments",
+        "xray:PutTelemetryRecords",
+        "xray:GetSamplingRules",
+        "xray:GetSamplingTargets"
+      ]
+    }));
+    stepfunctionsRole.addToPolicy(new aws_iam.PolicyStatement({
+      effect: aws_iam.Effect.ALLOW,
+      resources: [`arn:aws:connect:ap-northeast-1:${this.account}:instance/${instanceId}/contact/*`],
+      actions: [
+        "connect:StartOutboundVoiceContact"
+      ]
+    }));
+    stepfunctionsRole.addToPolicy(new aws_iam.PolicyStatement({
+      effect: aws_iam.Effect.ALLOW,
+      resources: [table.tableArn],
+      actions: [
+        "dynamodb:GetItem"
+      ]
+    }));
+    stepfunctionsRole.addToPolicy(new aws_iam.PolicyStatement({
+      effect: aws_iam.Effect.ALLOW,
+      resources: [iteratorFunction.functionArn],
+      actions: [
+        "lambda:InvokeFunction"
+      ]
+    }));
+
     const finish = new aws_stepfunctions.Pass(this, 'Finish');
 
     const startOutboundVoiceContact = new aws_stepfunctions.CustomState(this, 'StartOutboundVoiceContact', {
@@ -126,7 +164,7 @@ export class AlarmCallCommonStack extends Stack {
     const checkContinue = new aws_stepfunctions.CustomState(this, 'CheckContinue', {
       stateJson: {
         Type: 'Task',
-        Resource: `arn:aws:lambda:ap-northeast-1:${this.account}:function:Iterator`,
+        Resource: iteratorFunction.functionArn,
         ResultPath: '$.iterator',
       }
     }).next(choiceLoopOrStop);
@@ -152,8 +190,9 @@ export class AlarmCallCommonStack extends Stack {
       .otherwise(counterInitialize)
 
     this.stateMachine = new aws_stepfunctions.StateMachine(this, 'StateMachine', {
-        stateMachineName: `${tag}`,
-        definition: confirmationParams
+        stateMachineName: `${tag}_StateMachine`,
+        definition: confirmationParams,
+        role:stepfunctionsRole
       }
     );
   }

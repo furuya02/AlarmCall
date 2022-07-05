@@ -1,64 +1,58 @@
 {
     "modules": [
         {
-            "id": "ebdd5d7b-8f8d-4bbe-9dea-1ca3dad28a59",
-            "type": "GetUserInput",
+            "id": "0f168f21-b178-48ed-aaff-cd661b027887",
+            "type": "SetVoice",
             "branches": [
                 {
-                    "condition": "Evaluate",
-                    "conditionType": "Equals",
-                    "conditionValue": "#",
-                    "transition": "7ab772be-fb59-433e-a4aa-17e170f6d568"
-                },
-                {
-                    "condition": "Timeout",
-                    "transition": "7ab772be-fb59-433e-a4aa-17e170f6d568"
-                },
-                {
-                    "condition": "NoMatch",
-                    "transition": "d4056c13-26aa-46f3-b1c3-ff1a2d2dcd41"
-                },
-                {
-                    "condition": "Error",
-                    "transition": "d4056c13-26aa-46f3-b1c3-ff1a2d2dcd41"
+                    "condition": "Success",
+                    "transition": "1ddfc9b3-4c4e-4e81-ad3a-2387c183ab71"
                 }
             ],
             "parameters": [
                 {
-                    "name": "Text",
-                    "value": "システムのアラートです。\n確認したら、シャープを入力して下さい",
-                    "namespace": null
-                },
-                {
-                    "name": "TextToSpeechType",
-                    "value": "text"
-                },
-                {
-                    "name": "Timeout",
-                    "value": "5"
-                },
-                {
-                    "name": "MaxDigits",
-                    "value": "1"
+                    "name": "GlobalVoice",
+                    "value": "Mizuki"
                 }
             ],
             "metadata": {
                 "position": {
-                    "x": 64,
-                    "y": 209
+                    "x": 168,
+                    "y": 19
                 },
-                "conditionMetadata": [
-                    {
-                        "id": "aa7c46cc-797e-4ace-876b-672120ae8aa8",
-                        "value": "#"
-                    }
-                ],
-                "useDynamic": false,
-                "useLexBotDropdown": true,
-                "useDynamicLexBotArn": false,
-                "lexV2BotName": null
-            },
-            "target": "Digits"
+                "overrideConsoleVoice": false,
+                "defaultVoice": "Standard",
+                "fragments": {
+                    "SetContactData": "1ddfc9b3-4c4e-4e81-ad3a-2387c183ab71"
+                }
+            }
+        },
+        {
+            "id": "1ddfc9b3-4c4e-4e81-ad3a-2387c183ab71",
+            "type": "SetContactData",
+            "branches": [
+                {
+                    "condition": "Success",
+                    "transition": "ebdd5d7b-8f8d-4bbe-9dea-1ca3dad28a59"
+                },
+                {
+                    "condition": "Error",
+                    "transition": "ebdd5d7b-8f8d-4bbe-9dea-1ca3dad28a59"
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "ContactData",
+                    "namespace": null,
+                    "languageCode": "ja-JP"
+                }
+            ],
+            "metadata": {
+                "position": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
         },
         {
             "id": "00b3b1a9-806c-4bbd-9187-7b12c279a700",
@@ -108,7 +102,7 @@
             "parameters": [
                 {
                     "name": "FunctionArn",
-                    "value": "arn:aws:lambda:ap-northeast-1:xxxxxxxx:function:AlarmCall_SaveId",
+                    "value": "arn:aws:lambda:ap-northeast-1:xxxxxxxxxxxx:function:AlarmCall_SaveId",
                     "namespace": null
                 },
                 {
@@ -127,68 +121,74 @@
             "target": "Lambda"
         },
         {
+            "id": "ebdd5d7b-8f8d-4bbe-9dea-1ca3dad28a59",
+            "type": "GetUserInput",
+            "branches": [
+                {
+                    "condition": "Evaluate",
+                    "conditionType": "Equals",
+                    "conditionValue": "#",
+                    "transition": "7ab772be-fb59-433e-a4aa-17e170f6d568"
+                },
+                {
+                    "condition": "Timeout",
+                    "transition": "d4056c13-26aa-46f3-b1c3-ff1a2d2dcd41"
+                },
+                {
+                    "condition": "NoMatch",
+                    "transition": "7ab772be-fb59-433e-a4aa-17e170f6d568"
+                },
+                {
+                    "condition": "Error",
+                    "transition": "d4056c13-26aa-46f3-b1c3-ff1a2d2dcd41"
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "Text",
+                    "value": "システムのアラートです。\n確認したら、シャープを入力して下さい",
+                    "namespace": null
+                },
+                {
+                    "name": "TextToSpeechType",
+                    "value": "text"
+                },
+                {
+                    "name": "Timeout",
+                    "value": "5"
+                },
+                {
+                    "name": "MaxDigits",
+                    "value": "1"
+                }
+            ],
+            "metadata": {
+                "position": {
+                    "x": 64,
+                    "y": 209
+                },
+                "conditionMetadata": [
+                    {
+                        "id": "3a2491af-6739-4f93-a032-c86adc7f1681",
+                        "value": "#"
+                    }
+                ],
+                "useDynamic": false,
+                "useLexBotDropdown": true,
+                "useDynamicLexBotArn": false,
+                "lexV2BotName": null
+            },
+            "target": "Digits"
+        },
+        {
             "id": "d4056c13-26aa-46f3-b1c3-ff1a2d2dcd41",
             "type": "Disconnect",
             "branches": [],
             "parameters": [],
             "metadata": {
                 "position": {
-                    "x": 1036,
-                    "y": 415
-                }
-            }
-        },
-        {
-            "id": "0f168f21-b178-48ed-aaff-cd661b027887",
-            "type": "SetVoice",
-            "branches": [
-                {
-                    "condition": "Success",
-                    "transition": "862e0fee-1e6e-4c26-b8c2-012e644cb845"
-                }
-            ],
-            "parameters": [
-                {
-                    "name": "GlobalVoice",
-                    "value": "Mizuki"
-                }
-            ],
-            "metadata": {
-                "position": {
-                    "x": 168,
-                    "y": 19
-                },
-                "overrideConsoleVoice": false,
-                "defaultVoice": "Standard",
-                "fragments": {
-                    "SetContactData": "862e0fee-1e6e-4c26-b8c2-012e644cb845"
-                }
-            }
-        },
-        {
-            "id": "862e0fee-1e6e-4c26-b8c2-012e644cb845",
-            "type": "SetContactData",
-            "branches": [
-                {
-                    "condition": "Success",
-                    "transition": "ebdd5d7b-8f8d-4bbe-9dea-1ca3dad28a59"
-                },
-                {
-                    "condition": "Error",
-                    "transition": "ebdd5d7b-8f8d-4bbe-9dea-1ca3dad28a59"
-                }
-            ],
-            "parameters": [
-                {
-                    "name": "ContactData",
-                    "namespace": null,
-                    "languageCode": "ja-JP"
-                }
-            ],
-            "metadata": {
-                "position": {
-                    "x": 0,
-                    "y": 0
+                    "x": 1001,
+                    "y": 510
                 }
             }
         }
@@ -205,7 +205,7 @@
         "description": null,
         "type": "contactFlow",
         "status": "published",
-        "hash": "111205a428039c6525fd33fcc3e9bbbe9bb740e89ead9a94ed9a1d3659f2def3"
+        "hash": "4f44d115eda63bacaa6d02fc05b38e0a222344a9b1d364184f02563942aace30"
     },
     "type": "contactFlow"
 }
